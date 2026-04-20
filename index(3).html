@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PPSUC Date | 中国人民公安大学匹配平台</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C41E3A;
+    --red-dark: #8B0000;
+    --red-light: #f9e8eb;
+    --gold: #C9A84C;
+    --gold-light: #f5edd6;
+    --ink: #1a1a2e;
+    --ink-soft: #3d3d5c;
+    --gray: #6b7280;
+    --gray-light: #f4f4f6;
+    --white: #ffffff;
+    --border: #e5e7eb;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: #fafafa;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ── LANDING ── */
+  #screen-landing {
+    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  #screen-landing::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(196,30,58,0.35) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(201,168,76,0.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .landing-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(196,30,58,0.15);
+    border: 1px solid rgba(196,30,58,0.4);
+    color: #f4a0b0;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .landing-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2.8rem, 8vw, 5rem);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .landing-title span { color: var(--gold); }
+
+  .landing-sub {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 0.75rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+    letter-spacing: 0.05em;
+  }
+
+  .landing-desc {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.4);
+    max-width: 400px;
+    line-height: 1.7;
+    margin: 0 auto 3rem;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .landing-stats {
+    display: flex;
+    gap: 2.5rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+    animation: fadeUp 0.6s 0.35s ease both;
+  }
+
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gold);
+    display: block;
+  }
+  .stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.4); letter-spacing: 0.05em; }
+
+  .landing-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+
+  .btn-primary {
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 14px 0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .btn-primary:hover { background: #a01830; transform: translateY(-1px); }
+
+  .btn-outline {
+    background: transparent;
+    color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 14px 0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .btn-outline:hover { border-color: rgba(255,255,255,0.5); color: white; }
+
+  .landing-note {
+    margin-top: 2rem;
+    font-size: 12px;
+    color: rgba(255,255,255,0.25);
+    animation: fadeUp 0.6s 0.5s ease both;
+  }
+
+  /* ── FORM SCREENS ── */
+  .form-screen {
+    background: white;
+    flex-direction: column;
+  }
+
+  .form-header {
+    background: var(--ink);
+    padding: 20px 24px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .form-header-back {
+    color: rgba(255,255,255,0.6);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+  }
+  .form-header-back:hover { color: white; }
+
+  .form-header-info { flex: 1; }
+  .form-header-title { font-size: 16px; font-weight: 500; color: white; }
+  .form-header-sub { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+
+  .progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    transition: width 0.4s ease;
+  }
+
+  .form-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 24px;
+    max-width: 560px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .form-section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .form-section-desc {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+
+  .field { margin-bottom: 20px; }
+
+  .field-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+
+  .field-input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: var(--ink);
+    background: white;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  .field-input:focus { border-color: var(--red); }
+  .field-input::placeholder { color: #bbb; }
+
+  select.field-input { cursor: pointer; }
+
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* Radio pills */
+  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    padding: 8px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--gray);
+    background: white;
+    user-select: none;
+  }
+  .pill:hover { border-color: var(--red); color: var(--red); }
+  .pill.selected { border-color: var(--red); background: var(--red-light); color: var(--red); font-weight: 500; }
+
+  /* Question cards */
+  .question-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .question-num {
+    font-size: 11px;
+    color: var(--red);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .question-text {
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.55;
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+
+  .option-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .option {
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--ink-soft);
+    line-height: 1.4;
+    user-select: none;
+  }
+  .option:hover { border-color: var(--red); background: var(--red-light); color: var(--red); }
+  .option.selected { border-color: var(--red); background: var(--red-light); color: var(--red); font-weight: 500; }
+
+  .scale-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 6px;
+  }
+  .scale-btn {
+    flex: 1;
+    aspect-ratio: 1;
+    max-width: 44px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--gray);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .scale-btn:hover { border-color: var(--red); color: var(--red); }
+  .scale-btn.selected { border-color: var(--red); background: var(--red); color: white; }
+
+  .form-footer {
+    padding: 16px 24px 24px;
+    border-top: 1px solid var(--border);
+    max-width: 560px;
+    width: 100%;
+    margin: 0 auto;
+    background: white;
+  }
+
+  .btn-next {
+    width: 100%;
+    background: var(--ink);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .btn-next:hover { background: var(--red); }
+  .btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── RESULT ── */
+  #screen-result {
+    background: var(--ink);
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  #screen-result::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 30%, rgba(196,30,58,0.3) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .result-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 36px 28px;
+    max-width: 420px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .result-icon { font-size: 48px; margin-bottom: 16px; }
+
+  .result-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 22px;
+    color: white;
+    margin-bottom: 8px;
+  }
+
+  .result-desc {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+
+  .result-info {
+    background: rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  .result-info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .result-info-row:last-child { border-bottom: none; }
+  .result-info-label { color: rgba(255,255,255,0.4); }
+  .result-info-val { color: white; font-weight: 500; }
+
+  .result-next-time {
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  .result-next-time-label { font-size: 12px; color: rgba(201,168,76,0.7); margin-bottom: 4px; }
+  .result-next-time-date { font-size: 16px; font-weight: 600; color: var(--gold); }
+
+  .btn-gold {
+    width: 100%;
+    background: var(--gold);
+    color: var(--ink);
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .btn-gold:hover { background: #b8962e; }
+
+  /* ── WAITING ── */
+  #screen-waiting {
+    background: var(--ink);
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .waiting-content {
+    max-width: 380px;
+    animation: fadeUp 0.6s ease both;
+    position: relative;
+    z-index: 1;
+  }
+
+  .waiting-pulse {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(196,30,58,0.2);
+    border: 2px solid var(--red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 32px;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(196,30,58,0.4); }
+    50% { box-shadow: 0 0 0 16px rgba(196,30,58,0); }
+  }
+
+  .waiting-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 22px;
+    color: white;
+    margin-bottom: 10px;
+  }
+
+  .waiting-desc {
+    font-size: 14px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+
+  .countdown-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .countdown-label { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 12px; letter-spacing: 0.06em; }
+
+  .countdown-digits {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .countdown-unit { text-align: center; }
+  .countdown-num {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold);
+    display: block;
+    min-width: 52px;
+    background: rgba(201,168,76,0.1);
+    border-radius: 8px;
+    padding: 6px;
+  }
+  .countdown-unit-label { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 4px; }
+  .countdown-sep { font-size: 24px; color: rgba(255,255,255,0.2); padding-bottom: 16px; }
+
+  .waiting-stats {
+    display: flex;
+    gap: 0;
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .waiting-stat {
+    flex: 1;
+    padding: 14px 8px;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+  .waiting-stat:last-child { border-right: none; }
+  .waiting-stat-num { font-size: 20px; font-weight: 700; color: white; font-family: 'Noto Serif SC', serif; }
+  .waiting-stat-label { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 3px; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 100;
+    white-space: nowrap;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+  .tag-group { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--gray);
+    background: white;
+    user-select: none;
+  }
+  .tag:hover { border-color: var(--red); color: var(--red); }
+  .tag.selected { border-color: var(--red); background: var(--red-light); color: var(--red); font-weight: 500; }
+
+  textarea.field-input { resize: none; line-height: 1.6; }
+
+  /* ── PPSUC 特色元素 ── */
+  .ppsuc-emblem {
+    margin-bottom: 1.2rem;
+    animation: fadeUp 0.5s ease both;
+    filter: drop-shadow(0 0 12px rgba(196,30,58,0.3));
+  }
+
+  .ppsuc-motto {
+    margin-top: 0.75rem;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: rgba(201,168,76,0.45);
+    animation: fadeUp 0.6s 0.55s ease both;
+  }
+
+  .stat-loading {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.2);
+    animation: blink 1.2s infinite;
+  }
+  @keyframes blink {
+    0%,100% { opacity: 0.2; } 50% { opacity: 0.7; }
+  }
+
+  /* 表单头部加公安大标识线 */
+  .form-header { border-bottom: 2px solid var(--red); }
+
+  /* 警徽水印背景（表单页） */
+  .form-screen { position: relative; }
+  .form-screen::after {
+    content: '警';
+    position: fixed;
+    bottom: 80px;
+    right: -10px;
+    font-size: 180px;
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 700;
+    color: rgba(196,30,58,0.03);
+    pointer-events: none;
+    z-index: 0;
+    line-height: 1;
+  }
+
+  /* 结果页特色装饰 */
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--red), var(--gold), var(--red));
+    border-radius: 20px 20px 0 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     SCREEN 1: LANDING
+══════════════════════════════════ -->
+<div class="screen active" id="screen-landing">
+  <!-- 盾牌徽章 -->
+  <div class="ppsuc-emblem" aria-hidden="true">
+    <svg width="52" height="60" viewBox="0 0 52 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M26 2L4 12V30C4 42 14 52 26 58C38 52 48 42 48 30V12L26 2Z" fill="rgba(196,30,58,0.18)" stroke="rgba(196,30,58,0.5)" stroke-width="1.5"/>
+      <path d="M26 10L10 18V30C10 39 17 47 26 52C35 47 42 39 42 30V18L26 10Z" fill="rgba(196,30,58,0.1)" stroke="rgba(196,30,58,0.3)" stroke-width="1"/>
+      <text x="26" y="34" text-anchor="middle" font-size="14" font-weight="bold" fill="rgba(201,168,76,0.9)" font-family="serif">警</text>
+    </svg>
+  </div>
+  <div class="landing-badge">中国人民公安大学 · 专属缘分平台</div>
+  <div class="landing-title">PPSUC<br><span>Date</span></div>
+  <div class="landing-sub">中国人民公安大学 · 缘分匹配平台</div>
+  <div class="landing-desc">填写深度问卷，每周一次算法配对，遇见真正契合的那个人。</div>
+
+  <div class="landing-stats">
+    <div class="stat">
+      <span class="stat-num" id="counter-reg">
+        <span class="stat-loading">···</span>
+      </span>
+      <span class="stat-label">已注册</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num" id="counter-match">
+        <span class="stat-loading">···</span>
+      </span>
+      <span class="stat-label">已配对</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">每周五</span>
+      <span class="stat-label">配对日 20:00</span>
+    </div>
+  </div>
+
+  <div class="landing-actions">
+    <button class="btn-primary" onclick="goTo('screen-step1')">开始填写问卷</button>
+    <button class="btn-outline" onclick="goTo('screen-login')">已有账号，查看配对</button>
+  </div>
+  <div class="landing-note">基于心理学量表 · 多维度算法匹配 · 隐私严格保护</div>
+  <div class="ppsuc-motto">忠诚 · 为民 · 公正 · 廉洁</div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 2: 基本信息
+══════════════════════════════════ -->
+<div class="screen form-screen" id="screen-step1">
+  <div class="form-header">
+    <div class="form-header-back" onclick="goTo('screen-landing')">←</div>
+    <div class="form-header-info">
+      <div class="form-header-title">基本信息</div>
+      <div class="form-header-sub">第 1 步 / 共 4 步</div>
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:25%"></div></div>
+
+  <div class="form-body">
+    <div class="form-section-title">关于你</div>
+    <div class="form-section-desc">这些信息将帮助我们找到更合适的人，不会直接展示给对方。</div>
+
+    <div class="field">
+      <label class="field-label">学号</label>
+      <input class="field-input" id="s-sid" type="text" placeholder="请输入学号">
+    </div>
+
+    <div class="field">
+      <label class="field-label">邮箱</label>
+      <input class="field-input" id="s-email" type="email" placeholder="请输入常用邮箱">
+    </div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label class="field-label">年龄</label>
+        <input class="field-input" id="s-age" type="number" placeholder="18" min="16" max="35">
+      </div>
+      <div class="field">
+        <label class="field-label">年级</label>
+        <select class="field-input" id="s-grade">
+          <option value="">请选择</option>
+          <option>大一</option>
+          <option>大二</option>
+          <option>大三</option>
+          <option>大四</option>
+          <option>研一</option>
+          <option>研二</option>
+          <option>研三</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">专业</label>
+      <select class="field-input" id="s-major">
+        <option value="">请选择</option>
+        <option>侦查学</option>
+        <option>刑事科学技术</option>
+        <option>网络安全与执法</option>
+        <option>治安学</option>
+        <option>公安管理学</option>
+        <option>禁毒学</option>
+        <option>警务指挥与战术</option>
+        <option>经济犯罪侦查</option>
+        <option>法学</option>
+        <option>其他</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="field-label">性别</label>
+      <div class="pill-group" id="pg-gender">
+        <div class="pill" onclick="selectPill(this,'pg-gender')">男</div>
+        <div class="pill" onclick="selectPill(this,'pg-gender')">女</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">希望认识</label>
+      <div class="pill-group" id="pg-seek">
+        <div class="pill" onclick="selectPill(this,'pg-seek')">男生</div>
+        <div class="pill" onclick="selectPill(this,'pg-seek')">女生</div>
+        <div class="pill" onclick="selectPill(this,'pg-seek')">不限</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">寻找关系类型</label>
+      <div class="pill-group" id="pg-type">
+        <div class="pill" onclick="selectPill(this,'pg-type')">恋爱关系</div>
+        <div class="pill" onclick="selectPill(this,'pg-type')">深度友谊</div>
+        <div class="pill" onclick="selectPill(this,'pg-type')">都可以</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <button class="btn-next" onclick="nextStep('screen-step2', validateStep1)">下一步</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 3: 性格与生活
+══════════════════════════════════ -->
+<div class="screen form-screen" id="screen-step2">
+  <div class="form-header">
+    <div class="form-header-back" onclick="goTo('screen-step1')">←</div>
+    <div class="form-header-info">
+      <div class="form-header-title">性格与生活</div>
+      <div class="form-header-sub">第 2 步 / 共 4 步</div>
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+
+  <div class="form-body">
+    <div class="form-section-title">你是什么样的人？</div>
+    <div class="form-section-desc">这些问题帮助算法理解你的性格底色，请尽量真实作答。</div>
+
+    <div class="question-card">
+      <div class="question-num">Q1 · 社交风格</div>
+      <div class="question-text">聚会结束后，你通常感到……</div>
+      <div class="option-list">
+        <div class="option" onclick="selectOption(this)">精力充沛，还想继续</div>
+        <div class="option" onclick="selectOption(this)">还不错，但需要一点独处恢复</div>
+        <div class="option" onclick="selectOption(this)">有些疲惫，更喜欢安静的场合</div>
+        <div class="option" onclick="selectOption(this)">很累，独处对我来说是充电</div>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-num">Q2 · 日常习惯</div>
+      <div class="question-text">理想的周末是……</div>
+      <div class="option-list">
+        <div class="option" onclick="selectOption(this)">约朋友出去玩，探索新地方</div>
+        <div class="option" onclick="selectOption(this)">在家看书、追剧或做自己的事</div>
+        <div class="option" onclick="selectOption(this)">运动或户外活动</div>
+        <div class="option" onclick="selectOption(this)">随心所欲，看当天状态</div>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-num">Q3 · 压力处理</div>
+      <div class="question-text">遇到压力时，你更倾向于……</div>
+      <div class="option-list">
+        <div class="option" onclick="selectOption(this)">找朋友或伴侣倾诉</div>
+        <div class="option" onclick="selectOption(this)">独自处理，不想打扰别人</div>
+        <div class="option" onclick="selectOption(this)">先冷静，再找人聊</div>
+        <div class="option" onclick="selectOption(this)">通过运动或创作释放</div>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-num">Q4 · 生活节律</div>
+      <div class="question-text">你更接近哪种生活节奏？</div>
+      <div class="option-list">
+        <div class="option" onclick="selectOption(this)">早睡早起，规律自律</div>
+        <div class="option" onclick="selectOption(this)">夜猫子，深夜才最有灵感</div>
+        <div class="option" onclick="selectOption(this)">不固定，顺着节奏走</div>
+        <div class="option" onclick="selectOption(this)">想改变，但还没做到</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">你的兴趣爱好（可多选）</label>
+      <div class="tag-group" id="tg-hobby">
+        <div class="tag" onclick="toggleTag(this)">读书</div>
+        <div class="tag" onclick="toggleTag(this)">电影</div>
+        <div class="tag" onclick="toggleTag(this)">音乐</div>
+        <div class="tag" onclick="toggleTag(this)">运动</div>
+        <div class="tag" onclick="toggleTag(this)">游戏</div>
+        <div class="tag" onclick="toggleTag(this)">摄影</div>
+        <div class="tag" onclick="toggleTag(this)">旅行</div>
+        <div class="tag" onclick="toggleTag(this)">美食</div>
+        <div class="tag" onclick="toggleTag(this)">绘画</div>
+        <div class="tag" onclick="toggleTag(this)">写作</div>
+        <div class="tag" onclick="toggleTag(this)">健身</div>
+        <div class="tag" onclick="toggleTag(this)">桌游</div>
+        <div class="tag" onclick="toggleTag(this)">追剧</div>
+        <div class="tag" onclick="toggleTag(this)">爬山</div>
+        <div class="tag" onclick="toggleTag(this)">骑行</div>
+        <div class="tag" onclick="toggleTag(this)">手工</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <button class="btn-next" onclick="nextStep('screen-step3', validateStep2)">下一步</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 4: 价值观问卷
+══════════════════════════════════ -->
+<div class="screen form-screen" id="screen-step3">
+  <div class="form-header">
+    <div class="form-header-back" onclick="goTo('screen-step2')">←</div>
+    <div class="form-header-info">
+      <div class="form-header-title">价值观深度问卷</div>
+      <div class="form-header-sub">第 3 步 / 共 4 步</div>
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>
+
+  <div class="form-body">
+    <div class="form-section-title">你如何看待感情？</div>
+    <div class="form-section-desc">以下每道题请用 1-5 打分，1 = 完全不同意，5 = 完全同意。</div>
+
+    <div class="question-card">
+      <div class="question-num">Q5 · 情感表达</div>
+      <div class="question-text">我能自在地向亲近的人表达情感和需求。</div>
+      <div class="scale-group" id="scale-1">
+        <div class="scale-btn" onclick="selectScale(this,'scale-1')">1</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-1')">2</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-1')">3</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-1')">4</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-1')">5</div>
+      </div>
+      <div class="scale-labels"><span>完全不同意</span><span>完全同意</span></div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-num">Q6 · 独立性</div>
+      <div class="question-text">在亲密关系中，保持个人空间和独立性对我非常重要。</div>
+      <div class="scale-group" id="scale-2">
+        <div class="scale-btn" onclick="selectScale(this,'scale-2')">1</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-2')">2</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-2')">3</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-2')">4</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-2')">5</div>
+      </div>
+      <div class="scale-labels"><span>完全不同意</span><span>完全同意</span></div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-num">Q7 · 冲突处理</div>
+      <div class="question-text">当和对方产生分歧时，我倾向于直接沟通而非回避。</div>
+      <div class="scale-group" id="scale-3">
+        <div class="scale-btn" onclick="selectScale(this,'scale-3')">1</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-3')">2</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-3')">3</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-3')">4</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-3')">5</div>
+      </div>
+      <div class="scale-labels"><span>完全不同意</span><span>完全同意</span></div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-num">Q8 · 未来规划</div>
+      <div class="question-text">我希望和伴侣在未来的大方向上高度一致（城市、职业、生活方式等）。</div>
+      <div class="scale-group" id="scale-4">
+        <div class="scale-btn" onclick="selectScale(this,'scale-4')">1</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-4')">2</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-4')">3</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-4')">4</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-4')">5</div>
+      </div>
+      <div class="scale-labels"><span>完全不同意</span><span>完全同意</span></div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-num">Q9 · 开放性</div>
+      <div class="question-text">我会主动尝试对方感兴趣的事物，即使不在我的舒适圈内。</div>
+      <div class="scale-group" id="scale-5">
+        <div class="scale-btn" onclick="selectScale(this,'scale-5')">1</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-5')">2</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-5')">3</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-5')">4</div>
+        <div class="scale-btn" onclick="selectScale(this,'scale-5')">5</div>
+      </div>
+      <div class="scale-labels"><span>完全不同意</span><span>完全同意</span></div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-num">Q10 · 深度问题</div>
+      <div class="question-text">你觉得什么样的人最吸引你？（请认真写，这是配对权重最高的题目）</div>
+      <textarea class="field-input" id="q-attract" rows="4" placeholder="用几句话描述你理想中对方的样子，不用刻意，写真实感受就好……"></textarea>
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <button class="btn-next" onclick="nextStep('screen-step4', validateStep3)">下一步</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 5: 自我介绍
+══════════════════════════════════ -->
+<div class="screen form-screen" id="screen-step4">
+  <div class="form-header">
+    <div class="form-header-back" onclick="goTo('screen-step3')">←</div>
+    <div class="form-header-info">
+      <div class="form-header-title">最后一步</div>
+      <div class="form-header-sub">第 4 步 / 共 4 步</div>
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
+
+  <div class="form-body">
+    <div class="form-section-title">让对方认识你</div>
+    <div class="form-section-desc">配对成功后，这些内容会展示给对方。请真实填写，好的介绍会大幅提升对话质量。</div>
+
+    <div class="field">
+      <label class="field-label">你的昵称</label>
+      <input class="field-input" id="s-nickname" type="text" placeholder="可以不是真名">
+    </div>
+
+    <div class="field">
+      <label class="field-label">用一句话介绍自己</label>
+      <input class="field-input" id="s-tagline" type="text" placeholder="比如：爱拍照的刑侦系大三，喜欢深夜聊天">
+    </div>
+
+    <div class="field">
+      <label class="field-label">自我介绍（100-200字）</label>
+      <textarea class="field-input" id="s-bio" rows="5" placeholder="聊聊你是什么样的人、你的日常、你在寻找什么样的连接……"></textarea>
+      <div style="font-size:12px;color:#bbb;margin-top:6px;text-align:right;" id="bio-count">0 / 200</div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">你想对匹配到你的人说什么？</label>
+      <textarea class="field-input" id="s-msg" rows="3" placeholder="第一句话很重要……"></textarea>
+    </div>
+
+    <div class="field">
+      <label class="field-label">联系方式（配对成功后才会共享）</label>
+      <input class="field-input" id="s-contact" type="text" placeholder="微信号 / 手机号（二选一）">
+    </div>
+
+    <div style="background:var(--gold-light);border-radius:10px;padding:14px 16px;font-size:13px;color:#7a5f1a;line-height:1.6;margin-top:8px;">
+      ⚠️ 你的联系方式仅在双方均配对成功后才会披露，平台不会向任何第三方共享你的个人信息。
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <button class="btn-next" onclick="submitForm()" id="btn-submit">提交问卷，等待配对</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 6: 等待配对
+══════════════════════════════════ -->
+<div class="screen" id="screen-waiting" style="position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 30%,rgba(196,30,58,0.25) 0%,transparent 70%);pointer-events:none;"></div>
+  <div class="waiting-content">
+    <div class="waiting-pulse">❤</div>
+    <div class="waiting-title">问卷已提交！</div>
+    <div class="waiting-desc">每周五晚 20:00 公布配对结果。<br>我们会发送邮件通知你。</div>
+
+    <div class="countdown-box">
+      <div class="countdown-label">距离下次配对</div>
+      <div class="countdown-digits">
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd-days">00</span>
+          <div class="countdown-unit-label">天</div>
+        </div>
+        <div class="countdown-sep">:</div>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd-hours">00</span>
+          <div class="countdown-unit-label">时</div>
+        </div>
+        <div class="countdown-sep">:</div>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd-mins">00</span>
+          <div class="countdown-unit-label">分</div>
+        </div>
+        <div class="countdown-sep">:</div>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd-secs">00</span>
+          <div class="countdown-unit-label">秒</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="waiting-stats">
+      <div class="waiting-stat">
+        <div class="waiting-stat-num" id="ws-reg">--</div>
+        <div class="waiting-stat-label">本期报名</div>
+      </div>
+      <div class="waiting-stat">
+        <div class="waiting-stat-num" id="ws-match">--</div>
+        <div class="waiting-stat-label">历史配对</div>
+      </div>
+      <div class="waiting-stat">
+        <div class="waiting-stat-num">83%</div>
+        <div class="waiting-stat-label">满意率</div>
+      </div>
+    </div>
+
+    <button class="btn-gold" onclick="goTo('screen-landing')">返回首页</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 7: 登录查看配对
+══════════════════════════════════ -->
+<div class="screen form-screen" id="screen-login">
+  <div class="form-header">
+    <div class="form-header-back" onclick="goTo('screen-landing')">←</div>
+    <div class="form-header-info">
+      <div class="form-header-title">查看配对结果</div>
+      <div class="form-header-sub">输入你的学号和邮箱验证</div>
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+
+  <div class="form-body">
+    <div class="form-section-title">验证身份</div>
+    <div class="form-section-desc">请输入你的学号和邮箱以验证身份。</div>
+
+    <div class="field">
+      <label class="field-label">学号</label>
+      <input class="field-input" id="l-sid" type="text" placeholder="请输入学号">
+    </div>
+    <div class="field">
+      <label class="field-label">邮箱</label>
+      <input class="field-input" id="l-email" type="email" placeholder="请输入常用邮箱">
+    </div>
+
+    <div style="background:var(--gray-light);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--gray);line-height:1.6;margin-top:8px;">
+      配对结果每周五 20:00 公布，我们会提前发邮件通知你。
+    </div>
+  </div>
+
+  <div class="form-footer">
+    <button class="btn-next" onclick="checkResult()">查看我的配对</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 8: 配对结果
+══════════════════════════════════ -->
+<div class="screen" id="screen-result" style="position:relative;overflow:hidden;">
+  <div class="result-card">
+    <div class="result-icon">💌</div>
+    <div class="result-title">配对成功！</div>
+    <div class="result-desc">算法认为你们在价值观和生活方式上高度契合。<br>勇敢迈出第一步吧。</div>
+
+    <div class="result-info">
+      <div class="result-info-row">
+        <span class="result-info-label">匹配度</span>
+        <span class="result-info-val" style="color:var(--gold);">87%</span>
+      </div>
+      <div class="result-info-row">
+        <span class="result-info-label">对方昵称</span>
+        <span class="result-info-val">夜航星</span>
+      </div>
+      <div class="result-info-row">
+        <span class="result-info-label">专业年级</span>
+        <span class="result-info-val">侦查学 · 大三</span>
+      </div>
+      <div class="result-info-row">
+        <span class="result-info-label">共同兴趣</span>
+        <span class="result-info-val">电影、旅行、读书</span>
+      </div>
+      <div class="result-info-row">
+        <span class="result-info-label">算法配对理由</span>
+        <span class="result-info-val" style="max-width:60%;text-align:right;font-size:12px;line-height:1.4;">你们都重视个人边界，同时渴望深度情感连接</span>
+      </div>
+    </div>
+
+    <div class="result-info">
+      <div class="result-info-row">
+        <span class="result-info-label">对方的话</span>
+        <span class="result-info-val" style="max-width:65%;text-align:right;font-size:12px;line-height:1.4;font-style:italic;">"喜欢看星星，也喜欢被好好听见。"</span>
+      </div>
+      <div class="result-info-row">
+        <span class="result-info-label">联系方式</span>
+        <span class="result-info-val">wx: nightstar_42</span>
+      </div>
+    </div>
+
+    <button class="btn-gold" onclick="showToast('已复制联系方式！')">复制联系方式</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Navigation ──
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── Pill / Tag / Scale selectors ──
+function selectPill(el, groupId) {
+  document.querySelectorAll(`#${groupId} .pill`).forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function toggleTag(el) {
+  el.classList.toggle('selected');
+}
+
+function selectOption(el) {
+  const card = el.closest('.option-list');
+  card.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectScale(el, groupId) {
+  document.querySelectorAll(`#${groupId} .scale-btn`).forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ── Validation ──
+function validateStep1() {
+  const sid = document.getElementById('s-sid').value.trim();
+  const email = document.getElementById('s-email').value.trim();
+  const age = document.getElementById('s-age').value;
+  const grade = document.getElementById('s-grade').value;
+  const major = document.getElementById('s-major').value;
+  const gender = document.querySelector('#pg-gender .selected');
+  const seek = document.querySelector('#pg-seek .selected');
+  const type = document.querySelector('#pg-type .selected');
+
+  if (!sid) { showToast('请输入学号'); return false; }
+  
+  if (!age) { showToast('请输入年龄'); return false; }
+  if (!grade) { showToast('请选择年级'); return false; }
+  if (!major) { showToast('请选择专业'); return false; }
+  if (!gender) { showToast('请选择性别'); return false; }
+  if (!seek) { showToast('请选择希望认识的对象'); return false; }
+  if (!type) { showToast('请选择关系类型'); return false; }
+  return true;
+}
+
+function validateStep2() {
+  const cards = document.querySelectorAll('#screen-step2 .question-card');
+  for (let i = 0; i < cards.length; i++) {
+    if (!cards[i].querySelector('.option.selected')) {
+      showToast('请完成第 ' + (i + 1) + ' 道题');
+      cards[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+  }
+  return true;
+}
+
+function validateStep3() {
+  const s1 = document.querySelector('#scale-1 .selected');
+  const s5 = document.querySelector('#scale-5 .selected');
+  const attract = document.getElementById('q-attract').value.trim();
+  if (!s1 || !s5) { showToast('请完成所有评分题'); return false; }
+  if (!attract) { showToast('请填写第10题'); return false; }
+  return true;
+}
+
+function nextStep(targetId, validator) {
+  if (validator && !validator()) return;
+  goTo(targetId);
+}
+
+// ── Bio counter ──
+document.getElementById('s-bio')?.addEventListener('input', function() {
+  document.getElementById('bio-count').textContent = `${this.value.length} / 200`;
+});
+
+// ── Submit ──
+function submitForm() {
+  const nick = document.getElementById('s-nickname').value.trim();
+  const bio = document.getElementById('s-bio').value.trim();
+  const contact = document.getElementById('s-contact').value.trim();
+  if (!nick) { showToast('请填写昵称'); return; }
+  if (bio.length < 20) { showToast('自我介绍至少 20 字'); return; }
+  if (!contact) { showToast('请填写联系方式'); return; }
+
+  const btn = document.getElementById('btn-submit');
+  btn.textContent = '提交中...';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    // Update waiting screen stats
+    const reg = Math.floor(Math.random() * 300) + 150;
+    const match = Math.floor(Math.random() * 800) + 400;
+    document.getElementById('ws-reg').textContent = reg;
+    document.getElementById('ws-match').textContent = match;
+    goTo('screen-waiting');
+    btn.textContent = '提交问卷，等待配对';
+    btn.disabled = false;
+  }, 1200);
+}
+
+// ── Check result ──
+function checkResult() {
+  const sid = document.getElementById('l-sid').value.trim();
+  const email = document.getElementById('l-email').value.trim();
+  if (!sid) { showToast('请输入学号'); return; }
+  
+  goTo('screen-result');
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Landing counters (API-ready) ──
+// 当接入真实数据库后，将下方 fetchStats() 里的 URL 替换为你的 API 端点
+// API 应返回 JSON 格式: { "registered": 1247, "matched": 634 }
+const STATS_API_URL = null; // 例: 'https://your-api.com/stats'
+const FALLBACK_STATS = { registered: 1247, matched: 634 }; // 未接入API时的默认值
+
+function animateCount(el, target, duration) {
+  el.innerHTML = ''; // 清除 loading 状态
+  let start = 0;
+  const step = target / (duration / 16);
+  const timer = setInterval(() => {
+    start += step;
+    if (start >= target) {
+      el.textContent = target.toLocaleString();
+      clearInterval(timer);
+      // 数字跳动完毕后轻微缩放动效
+      el.style.transform = 'scale(1.15)';
+      el.style.transition = 'transform 0.15s';
+      setTimeout(() => { el.style.transform = 'scale(1)'; }, 150);
+      return;
+    }
+    el.textContent = Math.floor(start).toLocaleString();
+  }, 16);
+}
+
+async function fetchStats() {
+  let stats = FALLBACK_STATS;
+  if (STATS_API_URL) {
+    try {
+      const res = await fetch(STATS_API_URL, { cache: 'no-cache' });
+      if (res.ok) { stats = await res.json(); }
+    } catch (e) {
+      console.log('Stats API unavailable, using fallback:', e.message);
+    }
+  }
+  return stats;
+}
+
+// 轮询刷新间隔（毫秒），接入数据库后可调小
+const STATS_POLL_INTERVAL = 60000;
+
+async function loadAndAnimateStats(animate) {
+  const stats = await fetchStats();
+  const regEl = document.getElementById('counter-reg');
+  const matchEl = document.getElementById('counter-match');
+  if (animate) {
+    animateCount(regEl, stats.registered, 1500);
+    animateCount(matchEl, stats.matched, 1800);
+  } else {
+    regEl.textContent = stats.registered.toLocaleString();
+    matchEl.textContent = stats.matched.toLocaleString();
+  }
+  // 同步更新等待页数据
+  if (document.getElementById('ws-reg').textContent === '--') {
+    document.getElementById('ws-reg').textContent = stats.registered.toLocaleString();
+    document.getElementById('ws-match').textContent = stats.matched.toLocaleString();
+  }
+}
+
+// 首次加载
+setTimeout(() => loadAndAnimateStats(true), 400);
+// 定时轮询（接入真实API后生效）
+setInterval(() => loadAndAnimateStats(false), STATS_POLL_INTERVAL);
+
+// ── Countdown to next Friday 20:00 ──
+function updateCountdown() {
+  const now = new Date();
+  const next = new Date(now);
+  const day = now.getDay(); // 0=Sun,1=Mon,...5=Fri,6=Sat
+  // days until next Friday 20:00
+  let daysUntilFri;
+  if (day < 5) { daysUntilFri = 5 - day; }
+  else if (day === 5 && now.getHours() < 20) { daysUntilFri = 0; }
+  else { daysUntilFri = 7 - day + 5; }
+  next.setDate(now.getDate() + daysUntilFri);
+  next.setHours(20, 0, 0, 0);
+
+  const diff = next - now;
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+
+  const pad = n => String(n).padStart(2, '0');
+  document.getElementById('cd-days').textContent = pad(d);
+  document.getElementById('cd-hours').textContent = pad(h);
+  document.getElementById('cd-mins').textContent = pad(m);
+  document.getElementById('cd-secs').textContent = pad(s);
+}
+
+setInterval(updateCountdown, 1000);
+updateCountdown();
+</script>
+</body>
+</html>
